@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RUB Admin Panel’s</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#070914;
+  --text:#f4f6ff;
+  --muted:rgba(230,236,255,.62);
+  --glass:rgba(255,255,255,.09);
+  --glass-strong:rgba(255,255,255,.15);
+  --edge:rgba(255,255,255,.28);
+  --edge-soft:rgba(255,255,255,.08);
+  --accent:#7cf0ff;
+  --accent2:#b18cff;
+  --ok:#8dffb8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+  font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;
+}
+/* liquid background */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
+.b1{width:52vmax;height:52vmax;background:#3a63ff;top:-18vmax;left:-14vmax}
+.b2{width:46vmax;height:46vmax;background:#b44cff;bottom:-16vmax;right:-12vmax;animation-delay:-7s}
+.b3{width:34vmax;height:34vmax;background:#00d4c8;top:38%;left:42%;opacity:.5;animation-delay:-13s}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.blob{animation:none}}
+
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:28px 16px 64px}
+
+/* glass material */
+.glass{
+  background:linear-gradient(145deg,var(--glass-strong),var(--glass));
+  border:1px solid var(--edge-soft);
+  border-top-color:var(--edge);border-left-color:var(--edge);
+  border-radius:26px;
+  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.05),0 18px 50px rgba(0,0,0,.35);
+}
+
+header{padding:26px 22px;text-align:center;margin-bottom:16px}
+h1{margin:0;font-size:clamp(2rem,8vw,3.1rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;
+  background:linear-gradient(120deg,#fff 10%,var(--accent) 55%,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:10px 0 0;color:var(--muted);font-size:.98rem}
+
+.tools{display:flex;gap:10px;flex-wrap:wrap;padding:12px;margin-bottom:22px}
+.field{flex:1 1 200px;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.22);border:1px solid var(--edge-soft);border-radius:16px;padding:0 14px}
+.field span{color:var(--muted);font-size:.85rem;white-space:nowrap}
+.field input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:1rem;padding:14px 0}
+.field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,240,255,.18)}
+
+h2{font-size:1.05rem;font-weight:600;margin:26px 6px 12px;color:var(--muted)}
+
+.list{display:grid;gap:10px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radius:22px}
+.info{flex:1;min-width:0}
+.name{font-weight:600;font-size:1.02rem;line-height:1.25}
+.code{margin-top:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.btn{
+  flex:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:46px;padding:0 18px;border-radius:15px;cursor:pointer;
+  font:inherit;font-weight:600;font-size:.95rem;color:var(--text);text-decoration:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.25);
+  transition:transform .15s,background .2s;
+}
+.btn:hover{background:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,.12))}
+.btn:active{transform:scale(.95)}
+.btn:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.done{background:linear-gradient(160deg,rgba(141,255,184,.45),rgba(141,255,184,.15));border-color:rgba(141,255,184,.6)}
+
+.hero-card{padding:20px}
+.hero-card .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hero-card .info{flex:1 1 200px}
+.hero-card .desc{color:var(--muted);font-size:.9rem;margin-top:3px}
+details{margin-top:14px}
+summary{cursor:pointer;color:var(--accent);font-weight:500;font-size:.92rem;padding:6px 0}
+pre{margin:8px 0 0;max-height:260px;overflow:auto;padding:14px;border-radius:16px;background:rgba(0,0,0,.35);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;line-height:1.5;color:#d6dcff;white-space:pre}
+
+.empty{display:none;text-align:center;color:var(--muted);padding:22px}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:5;
+  padding:13px 22px;border-radius:999px;font-weight:600;pointer-events:none;transition:.28s;
+  background:rgba(20,28,40,.7);border:1px solid rgba(141,255,184,.5);color:var(--ok);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:520px){
+  .row{flex-wrap:wrap;padding:14px}
+  .row .btn{width:100%}
+}
+[hidden]{display:none!important}
+body::after{content:"";position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glass{position:relative;overflow:hidden}
+.glass::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.16),transparent 60%)}
+.glass>*{position:relative}
+.row{transition:transform .25s,border-color .25s}
+.row:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.4)}
+h2{display:flex;align-items:center;letter-spacing:.01em}
+h2::before{content:"";width:9px;height:9px;border-radius:50%;margin-right:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px var(--accent)}
+h1{filter:drop-shadow(0 0 22px rgba(124,240,255,.35))}
+.orb{width:68px;height:68px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff 0,rgba(255,255,255,.1) 28%,transparent 30%),radial-gradient(circle at 65% 75%,var(--accent2),transparent 60%),linear-gradient(135deg,var(--accent),#3a63ff);box-shadow:inset 0 2px 6px rgba(255,255,255,.7),0 0 40px rgba(124,240,255,.45);animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-7px)}}
+.pill{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 14px;border-radius:999px;font-size:.82rem;color:var(--ok);background:rgba(141,255,184,.1);border:1px solid rgba(141,255,184,.3)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.enter .row,.enter .hero-card,.enter header,.enter .tools{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(22px) scale(.98)}}
+.gate{position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity .6s,visibility .6s}
+.gate.out{opacity:0;visibility:hidden}
+.gate-card{width:100%;max-width:380px;padding:34px 26px;text-align:center}
+.gt{font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
+.gm{color:var(--muted);margin:8px 0 20px;font-size:.95rem}
+.gate .field{width:100%;margin-bottom:14px}
+.gate .field input{letter-spacing:.12em}
+.eye{background:none;border:0;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer;padding:10px 0 10px 8px}
+.dots{display:flex;justify-content:center;gap:10px;margin-bottom:18px}
+.dots i{width:30px;height:6px;border-radius:6px;background:rgba(255,255,255,.18);transition:.3s}
+.dots i.on{background:#ff6b8a;box-shadow:0 0 12px #ff6b8a}
+.go{width:100%}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+.gate-card.locked .gt{color:#ff6b8a}
+.gate-card.locked .orb{background:radial-gradient(circle at 30% 25%,#fff 0,transparent 30%),linear-gradient(135deg,#ff6b8a,#7a1030);box-shadow:inset 0 2px 6px rgba(255,255,255,.5),0 0 40px rgba(255,80,120,.5)}
+.gate-card.locked .field,.gate-card.locked .go,.gate-card.locked .eye{display:none}
+.gate-card.bad .gm{color:#ff8fa5}
+.mus{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:3;min-height:52px;padding:0 18px;border-radius:999px}
+.bars{display:inline-flex;align-items:flex-end;gap:3px;height:18px}
+.bars b{width:3px;height:4px;border-radius:2px;background:var(--accent)}
+.mus.play .bars b{animation:eq 1s ease-in-out infinite}
+.mus.play .bars b:nth-child(2){animation-delay:-.3s}.mus.play .bars b:nth-child(3){animation-delay:-.6s}.mus.play .bars b:nth-child(4){animation-delay:-.15s}
+@keyframes eq{50%{height:18px}}
+@media (prefers-reduced-motion:reduce){.orb,.pill i,.mus.play .bars b,.enter *{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<section class="gate" id="gate">
+  <form class="glass gate-card" id="gateForm" autocomplete="off" novalidate>
+    <div class="orb"></div>
+    <div class="gt" id="gTitle">Área restrita</div>
+    <p class="gm" id="gMsg">Digite a senha para entrar no painel.</p>
+    <label class="field"><input id="pw" type="password" placeholder="Senha" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Senha"><button type="button" class="eye" id="eye">Ver</button></label>
+    <div class="dots" id="dots" aria-label="Tentativas erradas"><i></i><i></i><i></i><i></i></div>
+    <button class="btn go" id="go" type="submit">Entrar</button>
+  </form>
+</section>
+
+<main class="wrap" id="app" hidden>
+  <header class="glass">
+    <div class="orb"></div>
+    <h1>RUB Admin Panel’s</h1>
+    <p>Toque em Copiar para levar o require ou o script ao console.</p>
+    <div class="pill"><i></i>Painel online</div>
+  </header>
+
+  <section class="glass tools" aria-label="Filtros">
+    <label class="field"><span>Usuário</span><input id="user" value="ggeemax" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Nome de usuário usado nos requires"></label>
+    <label class="field"><span>Buscar</span><input id="q" type="search" placeholder="nome do require" autocomplete="off" aria-label="Buscar require"></label>
+  </section>
+
+  <h2>Requires</h2>
+  <div class="list" id="list"></div>
+  <div class="empty glass" id="empty">Nenhum require encontrado. Limpe a busca para ver a lista toda.</div>
+
+  <h2>Link</h2>
+  <div class="glass row">
+    <div class="info">
+      <div class="name">Requires Spaoy</div>
+      <div class="code">https://requires-spaoy.com/</div>
+    </div>
+    <a class="btn" href="https://requires-spaoy.com/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+      Abrir link
+    </a>
+  </div>
+
+  <h2>Avatar Catalog</h2>
+  <div class="glass hero-card">
+    <div class="top">
+      <div class="info">
+        <div class="name">Avalog (Avatar Catalog Editor)</div>
+        <div class="desc">Insere o sistema pelo F9 usando o ID 122214542643927.</div>
+      </div>
+      <button class="btn" id="copyAva" type="button"></button>
+    </div>
+    <details>
+      <summary>Ver o script</summary>
+      <pre id="avaPre"></pre>
+    </details>
+  </div>
+</main>
+
+<button class="btn glass mus" id="mus" type="button" hidden aria-label="Ligar ou desligar a música"><span class="bars"><b></b><b></b><b></b><b></b></span><span id="musL">Lofi</span></button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="text/plain" id="avaSrc">-- Sistema de Inserção do Avalog (ID: 122214542643927) via F9
+local assetId = 122214542643927
+local assetService = game:GetService("AssetService")
+local workspace = game:GetService("Workspace")
+
+local success, result = pcall(function()
+    -- Usa o método moderno que tem permissão para puxar modelos públicos de terceiros
+    return assetService:LoadAssetAsync(assetId)
+end)
+
+if success and result then
+	-- Concede permissões para os scripts internos do sistema rodarem (Tira do Sandbox)
+	pcall(function()
+		result.Sandboxed = false
+	end)
+	
+	-- Organiza o modelo. Sistemas de avatar geralmente vêm em uma pasta/modelo principal
+	result.Name = "AvalogSystem"
+	result.Parent = workspace
+	
+	-- Distribui os componentes internos para suas respectivas pastas padrão do Roblox caso existam
+	-- (Muitos sistemas prontos precisam de partes na ReplicatedStorage ou StarterGui para funcionar)
+	for _, child in pairs(result:GetChildren()) do
+		if child.Name:lower():find("replicated") or child.Name:lower():find("remotes") then
+			child.Parent = game:GetService("ReplicatedStorage")
+		elseif child.Name:lower():find("gui") or child.Name:lower():find("screen") then
+			child.Parent = game:GetService("StarterGui")
+			-- Também joga direto na sua tela atual para você testar agora mesmo:
+			local p = game:GetService("Players"):FindFirstChild("ggeemax")
+			if p and p:FindFirstChild("PlayerGui") then
+				local guiClone = child:Clone()
+				guiClone.Parent = p.PlayerGui
+			end
+		elseif child.Name:lower():find("server") or child.Name:lower():find("script") and child:IsA("Script") then
+			child.Parent = game:GetService("ServerScriptService")
+		end
+	end
+	
+	-- Força um respawn no seu boneco para carregar os novos scripts de avatar que acabaram de entrar no jogo
+	local p = game:GetService("Players"):FindFirstChild("ggeemax")
+	if p then p:LoadCharacter() end
+
+	print("Avalog (Avatar Catalog Editor) inserido e configurado com sucesso!")
+else
+	print("Falha crítica ao carregar o modelo: " .. tostring(result))
+end
+</script>
+
+<script>
+var REQS = [
+  ["Sensation Hub", 'require(82303184140990)("ggeemax")'],
+  ["Uno Legal", 'require(13902025530).Give("ggeemax")'],
+  ["HappyHub", 'require(104239303577263):Hload("ggeemax")'],
+  ["Emojis Legais", 'require(88975333341544)("ggeemax")'],
+  ["Espionar o Samuel", 'require(72113882270632)("EO_RATAOBOLA","ggeemax")'],
+  ["Slap Battle (meu jogo)", 'require(12422997119)()'],
+  ["Robio", 'require(8246120470).ced()'],
+  ["Minecraft!", 'require(96740567205611)("ggeemax")'],
+  ["Enfrente os NPCs", 'require(12616305147)()'],
+  ["Piano Maneiro", 'require(86680068018369)("ggeemax")'],
+  ["Backrooms Super Maneiro", 'require(9430281296)()'],
+  ["Bola", 'require(131336118336660)("ggeemax")'],
+  ["Spawnar NPCs", 'require(130680206336655).DummySpawner("ggeemax")'],
+  ["Poop Tools V2", 'require(16052382566).PoopToolsV2("ggeemax")']
+];
+var ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+var $ = function (id) { return document.getElementById(id); };
+var userEl = $("user"), qEl = $("q"), listEl = $("list"), toastEl = $("toast");
+var toastTimer;
+
+function withUser(text) {
+  var u = userEl.value.trim() || "ggeemax";
+  return text.split("ggeemax").join(u);
+}
+
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1800);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+  }
+  fallbackCopy(text);
+  return Promise.resolve();
+}
+function fallbackCopy(text) {
+  var t = document.createElement("textarea");
+  t.value = text; t.setAttribute("readonly", "");
+  t.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+  document.body.appendChild(t);
+  t.select(); t.setSelectionRange(0, text.length);
+  try { document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(t);
+}
+
+function flash(btn, label, idle) {
+  btn.classList.add("done");
+  btn.innerHTML = ICON_OK + "Copiado";
+  setTimeout(function () { btn.classList.remove("done"); btn.innerHTML = ICON_COPY + idle; }, 1400);
+}
+
+function render() {
+  var q = qEl.value.trim().toLowerCase();
+  listEl.innerHTML = "";
+  var shown = 0;
+  REQS.forEach(function (r) {
+    if (q && r[0].toLowerCase().indexOf(q) === -1) return;
+    shown++;
+    var row = document.createElement("div");
+    row.className = "glass row";
+    var info = document.createElement("div");
+    info.className = "info";
+    var n = document.createElement("div"); n.className = "name"; n.textContent = r[0];
+    var c = document.createElement("div"); c.className = "code"; c.textContent = withUser(r[1]);
+    info.appendChild(n); info.appendChild(c);
+    var b = document.createElement("button");
+    b.className = "btn"; b.type = "button"; b.innerHTML = ICON_COPY + "Copiar";
+    b.setAttribute("aria-label", "Copiar require " + r[0]);
+    b.addEventListener("click", function () {
+      copyText(withUser(r[1])).then(function () { flash(b, "", "Copiar"); toast(r[0] + " copiado"); });
+    });
+    row.appendChild(info); row.appendChild(b);
+    listEl.appendChild(row);
+  });
+  $("empty").style.display = shown ? "none" : "block";
+  $("avaPre").textContent = withUser($("avaSrc").textContent);
+}
+
+var avaBtn = $("copyAva");
+avaBtn.innerHTML = ICON_COPY + "Copiar script";
+avaBtn.addEventListener("click", function () {
+  copyText(withUser($("avaSrc").textContent)).then(function () { flash(avaBtn, "", "Copiar script"); toast("Avatar Catalog copiado"); });
+});
+
+userEl.addEventListener("input", render);
+qEl.addEventListener("input", render);
+render();
+
+/* brilho que segue o dedo/mouse */
+document.addEventListener("pointermove", function (e) {
+  var g = e.target.closest && e.target.closest(".glass");
+  if (!g) return;
+  var r = g.getBoundingClientRect();
+  g.style.setProperty("--mx", (e.clientX - r.left) + "px");
+  g.style.setProperty("--my", (e.clientY - r.top) + "px");
+});
+
+/* ---------- música lofi gerada no navegador ---------- */
+var Music = (function () {
+  var ctx, bus, master, nb, timer, on = false, step = 0, next = 0, ready = false;
+  var E = 60 / 76 / 2;
+  var CH = [
+    { b: 73.42, n: [146.83, 174.61, 220, 261.63, 329.63] },
+    { b: 98, n: [196, 246.94, 293.66, 349.23, 440] },
+    { b: 130.81, n: [164.81, 196, 246.94, 293.66, 329.63] },
+    { b: 110, n: [164.81, 196, 246.94, 261.63, 329.63] }
+  ];
+  var SC = [523.25, 587.33, 698.46, 880, 659.25, 783.99];
+  function init() {
+    if (ready) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600; lp.connect(master);
+    bus = ctx.createGain(); bus.connect(lp);
+    var dl = ctx.createDelay(1); dl.delayTime.value = E * 3;
+    var fb = ctx.createGain(); fb.gain.value = .32;
+    var dlp = ctx.createBiquadFilter(); dlp.type = "lowpass"; dlp.frequency.value = 1800;
+    bus.connect(dl); dl.connect(dlp); dlp.connect(fb); fb.connect(dl); dlp.connect(lp);
+    nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    var d = nb.getChannelData(0), i;
+    for (i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    var cb = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate), c = cb.getChannelData(0);
+    for (i = 0; i < c.length; i++) c[i] = Math.random() < .0009 ? (Math.random() * 2 - 1) : (Math.random() * 2 - 1) * .02;
+    var cs = ctx.createBufferSource(); cs.buffer = cb; cs.loop = true;
+    var hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1200;
+    var cg = ctx.createGain(); cg.gain.value = .35;
+    cs.connect(hp); hp.connect(cg); cg.connect(master); cs.start();
+    ready = true;
+  }
+  function tone(f, t, d, type, g) {
+    var o = ctx.createOscillator(), v = ctx.createGain();
+    o.type = type; o.frequency.value = f; o.detune.value = (Math.random() - .5) * 16;
+    v.gain.setValueAtTime(0, t); v.gain.linearRampToValueAtTime(g, t + .05);
+    v.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(v); v.connect(bus); o.start(t); o.stop(t + d + .05);
+  }
+  function hit(t, d, type, fr, g) {
+    var s = ctx.createBufferSource(); s.buffer = nb;
+    var f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = fr;
+    var v = ctx.createGain(); v.gain.setValueAtTime(g, t); v.gain.exponentialRampToValueAtTime(.0001, t + d);
+    s.connect(f); f.connect(v); v.connect(bus); s.start(t); s.stop(t + d + .02);
+  }
+  function kick(t) {
+    var o = ctx.createOscillator(), v = ctx.createGain();
+    o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + .16);
+    v.gain.setValueAtTime(.55, t); v.gain.exponentialRampToValueAtTime(.0001, t + .28);
+    o.connect(v); v.connect(bus); o.start(t); o.stop(t + .3);
+  }
+  function play(s, t) {
+    var ch = CH[Math.floor(s / 8) % 4], p = s % 8, k;
+    if (p === 0) { for (k = 0; k < ch.n.length; k++) tone(ch.n[k], t + k * .014, 3, "triangle", .05); }
+    if (p === 5) { for (k = 1; k < ch.n.length; k++) tone(ch.n[k], t + k * .01, 1.1, "triangle", .03); }
+    if (p === 0) tone(ch.b, t, 1.5, "sine", .24);
+    if (p === 4) tone(ch.b, t, 1.1, "sine", .17);
+    if (p === 0 || p === 4) kick(t);
+    if (p === 5 && Math.random() < .35) kick(t);
+    if (p === 2 || p === 6) hit(t, .16, "bandpass", 1800, .16);
+    hit(t, .04, "highpass", 7000, p % 2 ? .035 : .06);
+    if (p % 2 === 0 && Math.random() < .24) tone(SC[Math.floor(Math.random() * SC.length)], t, 1.4, "sine", .045);
+  }
+  function tick() {
+    while (next < ctx.currentTime + .25) {
+      play(step, next + (step % 2 ? E * .16 : 0));
+      next += E; step++;
+    }
+  }
+  function ui() {
+    var b = document.getElementById("mus");
+    b.classList.toggle("play", on);
+    document.getElementById("musL").textContent = on ? "Lofi ligado" : "Lofi desligado";
+  }
+  return {
+    prime: function () { try { init(); if (ctx && ctx.state === "suspended") ctx.resume(); } catch (e) {} },
+    start: function () {
+      try {
+        init(); if (!ctx) return;
+        ctx.resume();
+        if (!on) { on = true; next = ctx.currentTime + .1; timer = setInterval(tick, 60); }
+        master.gain.cancelScheduledValues(ctx.currentTime);
+        master.gain.linearRampToValueAtTime(.55, ctx.currentTime + 3);
+        ui();
+      } catch (e) {}
+    },
+    stop: function () {
+      if (!ctx) return;
+      on = false; clearInterval(timer);
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
+      ui();
+    },
+    toggle: function () { on ? this.stop() : this.start(); }
+  };
+})();
+$("mus").addEventListener("click", function () { Music.toggle(); });
+
+/* ---------- senha e bloqueio ---------- */
+var HASH = "6ff7707c57a114442c1504b7d48ab9d49ef2bb438d812863a4a867987a20ab3a";
+var MAX = 4, KEY = "rub_attempts";
+var gate = $("gate"), card = $("gateForm"), pw = $("pw"), dots = $("dots").children;
+
+function getTries() { try { return parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) { return 0; } }
+function setTries(n) { try { localStorage.setItem(KEY, String(n)); } catch (e) {} }
+
+function sha256(s) {
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function (b) {
+    return Array.prototype.map.call(new Uint8Array(b), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+  });
+}
+
+function paint(n) {
+  for (var i = 0; i < dots.length; i++) dots[i].classList.toggle("on", i < n);
+  if (n >= MAX) {
+    card.classList.add("locked");
+    $("gTitle").textContent = "Acesso bloqueado";
+    $("gMsg").textContent = "Você errou a senha 4 vezes. O painel foi bloqueado neste navegador.";
+    pw.disabled = true; $("go").disabled = true;
+    return true;
+  }
+  return false;
+}
+
+function unlock() {
+  setTries(0);
+  gate.classList.add("out");
+  var app = $("app");
+  app.hidden = false; app.classList.add("enter");
+  $("mus").hidden = false;
+  Music.start();
+  setTimeout(function () { app.classList.remove("enter"); gate.hidden = true; }, 1500);
+}
+
+card.addEventListener("submit", function (e) {
+  e.preventDefault();
+  var n = getTries();
+  if (n >= MAX) return;
+  Music.prime();
+  var v = pw.value;
+  if (!(window.crypto && crypto.subtle)) {
+    $("gMsg").textContent = "Este navegador não consegue verificar a senha. Abra em um navegador atualizado.";
+    return;
+  }
+  sha256(v).then(function (h) {
+    if (h === HASH) { unlock(); return; }
+    n++; setTries(n); pw.value = "";
+    if (paint(n)) return;
+    card.classList.add("bad");
+    $("gMsg").textContent = "Senha incorreta. Restam " + (MAX - n) + (MAX - n === 1 ? " tentativa." : " tentativas.");
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+    pw.focus();
+  });
+});
+$("eye").addEventListener("click", function () {
+  var show = pw.type === "password";
+  pw.type = show ? "text" : "password";
+  this.textContent = show ? "Ocultar" : "Ver";
+});
+paint(getTries());
+if (getTries() < MAX) setTimeout(function () { pw.focus(); }, 300);
+</script>
+</body>
+</html>
